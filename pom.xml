@@ -34,17 +34,21 @@
 			<name>Timothy Redmond</name>
 			<email>tredmond@stanford.edu</email>
 		</developer>
+		<developer>
+			<name>Oliver Karrenbauer</name>
+			<email>oliver.karrenbauer@gmail.com</email>
+		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:git@github.com:protegeproject/code-generation.git</connection>
-		<developerConnection>scm:git:git@github.com:protegeproject/code-generation.git</developerConnection>
-		<url>https://github.com/protegeproject/code-generation</url>
+		<connection>scm:git:git@github.com:oliverkrr/code-generation.git</connection>
+		<developerConnection>scm:git:git@github.com:oliverkrr/code-generation.git</developerConnection>
+		<url>https://github.com/oliverkrr/code-generation</url>
 	</scm>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/protegeproject/code-generation/issues</url>
+		<url>https://github.com/oliverkrr/code-generation/issues</url>
 	</issueManagement>
 
 	<properties>
