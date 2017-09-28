@@ -50,6 +50,7 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
      * 
      * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()
      */
+    @Override
     public void initialise() throws Exception {
         options = new CodeGenerationOptions();
         options.setFactoryClassName(codeGenerationPreferences.getString(FACTORY_PREFS_KEY, "MyFactory"));
@@ -66,6 +67,7 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
      * 
      * @see org.protege.editor.core.Disposable#dispose()
      */
+    @Override
     public void dispose() throws Exception {
 
     }
@@ -76,6 +78,7 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
      * @see
      * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         showGeneratorPanel();
     }
@@ -117,6 +120,7 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
      * @see
      * org.protege.editor.owl.codegeneration.GenerateCodeWithOptions#okClicked()
      */
+    @Override
     public void okClicked() {
         codeGenOptionFrame.setVisible(false);
         codeGenerationPreferences.putString(FACTORY_PREFS_KEY, options.getFactoryClassName());
@@ -132,6 +136,11 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
             inference = new SimpleInference(owlOntology);
         }
         try {
+            String packagePath = options.getPackage().replace(".", "\\");
+            File generatedStuff = new File(options.getOutputFolder().getPath() + "\\" + packagePath);
+            if (generatedStuff.exists()) {
+                delete(generatedStuff);
+            }
             // deleting stuff can in some cases be very bad here. If it is reinstated then
             // at least warn the user.
             DefaultWorker.generateCode(owlOntology, options, new ProtegeNames(owlModelManager, options),
@@ -144,12 +153,22 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
         }
     }
 
+    private static void delete(File file) {
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                delete(child);
+            }
+        }
+        file.delete();
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see
      * org.protege.editor.owl.codegeneration.GenerateCodeWithOptions#cancelClicked()
      */
+    @Override
     public void cancelClicked() {
         codeGenOptionFrame.setVisible(false);
     }
