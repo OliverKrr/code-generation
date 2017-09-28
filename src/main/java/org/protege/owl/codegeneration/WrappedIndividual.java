@@ -9,10 +9,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
  * 
  */
 public interface WrappedIndividual extends Comparable<WrappedIndividual> {
- 
-	OWLOntology getOwlOntology();
-	
-	OWLNamedIndividual getOwlIndividual();
-	
-	void assertOwlType(OWLClassExpression type);
+
+    OWLOntology getOwlOntology();
+
+    OWLNamedIndividual getOwlIndividual();
+
+    void assertOwlType(OWLClassExpression type);
 }

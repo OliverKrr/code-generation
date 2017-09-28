@@ -19,7 +19,8 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 import org.semanticweb.owlapi.model.OWLPropertyAssertionAxiom;
 
-public abstract class CodeGenerationListener<X extends WrappedIndividual> implements OWLOntologyChangeListener {
+public abstract class CodeGenerationListener<X extends WrappedIndividual>
+        implements OWLOntologyChangeListener {
     private Set<OWLNamedIndividual> signature;
     private Set<OWLNamedIndividual> handledForCreation = new TreeSet<OWLNamedIndividual>();
     private Set<OWLNamedIndividual> handledForModification = new TreeSet<OWLNamedIndividual>();
@@ -35,8 +36,9 @@ public abstract class CodeGenerationListener<X extends WrappedIndividual> implem
         inference = factory.getInference();
         type = factory.getOwlClassFromJavaInterface(javaInterface);
     }
-   
+
     public abstract void individualCreated(X individual);
+
     public abstract void individualModified(X individual);
 
     @Override
@@ -45,12 +47,11 @@ public abstract class CodeGenerationListener<X extends WrappedIndividual> implem
             reset();
             handleCreationEvents(changes);
             handleModificationEvents(changes);
-        }
-        finally {
+        } finally {
             signature = factory.getOwlOntology().getIndividualsInSignature();
-        }            
+        }
     }
-    
+
     private void reset() {
         handledForCreation.clear();
         handledForModification.clear();
@@ -59,16 +60,15 @@ public abstract class CodeGenerationListener<X extends WrappedIndividual> implem
 
     private void handleCreationEvents(List<? extends OWLOntologyChange> changes) {
         for (OWLOntologyChange change : changes) {
-            if (change instanceof AddAxiom) { 
+            if (change instanceof AddAxiom) {
                 handleCreationEvent((AddAxiom) change);
             }
         }
     }
-    
+
     private void handleCreationEvent(AddAxiom change) {
         for (OWLEntity e : change.getSignature()) {
-            if (e instanceof OWLNamedIndividual 
-                    && !handledForCreation.contains(e)
+            if (e instanceof OWLNamedIndividual && !handledForCreation.contains(e)
                     && !signature.contains(e)) {
                 handledForCreation.add((OWLNamedIndividual) e);
                 if (inference.canAs((OWLNamedIndividual) e, type)) {
@@ -78,21 +78,22 @@ public abstract class CodeGenerationListener<X extends WrappedIndividual> implem
             }
         }
     }
-    
+
     private void handleModificationEvents(List<? extends OWLOntologyChange> changes) {
         for (OWLOntologyChange change : changes) {
-            if (change instanceof OWLAxiomChange) { 
+            if (change instanceof OWLAxiomChange) {
                 handleModificationEvent((OWLAxiomChange) change);
             }
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     private void handleModificationEvent(OWLAxiomChange change) {
         OWLAxiom axiom = change.getAxiom();
         if (axiom instanceof OWLPropertyAssertionAxiom
                 && ((OWLPropertyAssertionAxiom) axiom).getSubject().isNamed()) {
-            OWLNamedIndividual i = ((OWLPropertyAssertionAxiom) change.getAxiom()).getSubject().asOWLNamedIndividual();
+            OWLNamedIndividual i = ((OWLPropertyAssertionAxiom) change.getAxiom()).getSubject()
+                    .asOWLNamedIndividual();
             if (!handledForModification.contains(i) && inference.canAs((OWLNamedIndividual) i, type)) {
                 WrappedIndividual wrapped = new WrappedIndividualImpl(inference, i);
                 individualModified(factory.as(wrapped, javaInterface));

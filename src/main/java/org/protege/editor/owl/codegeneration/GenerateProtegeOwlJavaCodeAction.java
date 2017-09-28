@@ -10,8 +10,6 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.core.prefs.PreferencesManager;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
@@ -24,20 +22,22 @@ import org.protege.owl.codegeneration.inference.ReasonerBasedInference;
 import org.protege.owl.codegeneration.inference.SimpleInference;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author z.khan
  * 
  */
 public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implements GenerateCodeCallback {
-	public static final Logger LOGGER = LoggerFactory.getLogger(GenerateProtegeOwlJavaCodeAction.class);
-	public static final String CODE_GENERATION_PREFERENCES = "CODE_GENERATION_PREFERENCES";
-	public static final String PACKAGE_PREFS_KEY = "package";
-	public static final String FOLDER_PREFS_KEY = "folder";
-	public static final String FACTORY_PREFS_KEY = "factory";
-	
-	
-	private Preferences codeGenerationPreferences = PreferencesManager.getInstance().getPreferencesForSet(CODE_GENERATION_PREFERENCES, GenerateProtegeOwlJavaCodeAction.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(GenerateProtegeOwlJavaCodeAction.class);
+    public static final String CODE_GENERATION_PREFERENCES = "CODE_GENERATION_PREFERENCES";
+    public static final String PACKAGE_PREFS_KEY = "package";
+    public static final String FOLDER_PREFS_KEY = "folder";
+    public static final String FACTORY_PREFS_KEY = "factory";
+
+    private Preferences codeGenerationPreferences = PreferencesManager.getInstance()
+            .getPreferencesForSet(CODE_GENERATION_PREFERENCES, GenerateProtegeOwlJavaCodeAction.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,9 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
 
     private JFrame codeGenOptionFrame;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.protege.editor.core.plugin.ProtegePluginInstance#initialise()
      */
     public void initialise() throws Exception {
@@ -54,20 +56,25 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
         options.setPackage(codeGenerationPreferences.getString(PACKAGE_PREFS_KEY, ""));
         String folder = codeGenerationPreferences.getString(FOLDER_PREFS_KEY, null);
         if (folder == null) {
-        	folder = new File("").getAbsolutePath().toString();
+            folder = new File("").getAbsolutePath().toString();
         }
-    	options.setOutputFolder(new File(folder));
+        options.setOutputFolder(new File(folder));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.protege.editor.core.Disposable#dispose()
      */
     public void dispose() throws Exception {
 
     }
 
-    /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
     public void actionPerformed(ActionEvent e) {
         showGeneratorPanel();
@@ -86,7 +93,9 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
         center(codeGenOptionFrame);
     }
 
-    /**Sets the generator panel to center
+    /**
+     * Sets the generator panel to center
+     * 
      * @param component
      */
     public static void center(Component component) {
@@ -102,9 +111,11 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
         component.setLocation(new Point(xPos, yPos));
     }
 
-    /* 
+    /*
      * (non-Javadoc)
-     * @see org.protege.editor.owl.codegeneration.GenerateCodeWithOptions#okClicked()
+     * 
+     * @see
+     * org.protege.editor.owl.codegeneration.GenerateCodeWithOptions#okClicked()
      */
     public void okClicked() {
         codeGenOptionFrame.setVisible(false);
@@ -115,25 +126,29 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
         OWLOntology owlOntology = owlModelManager.getActiveOntology();
         CodeGenerationInference inference;
         if (options.useReasoner()) {
-        	OWLReasoner reasoner = owlModelManager.getOWLReasonerManager().getCurrentReasoner();
-        	inference = new ReasonerBasedInference(owlOntology, reasoner);
-        }
-        else {
-        	inference = new SimpleInference(owlOntology);
+            OWLReasoner reasoner = owlModelManager.getOWLReasonerManager().getCurrentReasoner();
+            inference = new ReasonerBasedInference(owlOntology, reasoner);
+        } else {
+            inference = new SimpleInference(owlOntology);
         }
         try {
-        	// deleting stuff can in some cases be very bad here.  If it is reinstated then at least warn the user.
-            DefaultWorker.generateCode(owlOntology, options, new ProtegeNames(owlModelManager, options), inference);
+            // deleting stuff can in some cases be very bad here. If it is reinstated then
+            // at least warn the user.
+            DefaultWorker.generateCode(owlOntology, options, new ProtegeNames(owlModelManager, options),
+                    inference);
             JOptionPane.showMessageDialog(null, "Java code successfully generated.", "Information",
                     JOptionPane.INFORMATION_MESSAGE);
             LOGGER.info("Java code successfully generated in folder " + options.getOutputFolder() + ".");
         } catch (IOException e) {
-        	ErrorLogPanel.showErrorDialog(e);
+            ErrorLogPanel.showErrorDialog(e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.protege.editor.owl.codegeneration.GenerateCodeWithOptions#cancelClicked()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.protege.editor.owl.codegeneration.GenerateCodeWithOptions#cancelClicked()
      */
     public void cancelClicked() {
         codeGenOptionFrame.setVisible(false);

@@ -1,9 +1,9 @@
 package org.protege.owl.codegeneration.impl;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -33,80 +33,81 @@ import org.semanticweb.owlapi.util.SimpleShortFormProvider;
  * 
  */
 public class WrappedIndividualImpl implements WrappedIndividual {
-    
+
     private OWLOntology owlOntology;
     private OWLNamedIndividual owlIndividual;
     private CodeGenerationHelper delegate;
-    
-    /**Constructor
+
+    /**
+     * Constructor
+     * 
      * @param inference
      * @param iri
      */
     public WrappedIndividualImpl(CodeGenerationInference inference, IRI iri) {
-        this(inference, inference.getOWLOntology().getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(iri));
+        this(inference, inference.getOWLOntology().getOWLOntologyManager().getOWLDataFactory()
+                .getOWLNamedIndividual(iri));
     }
-    
+
     public WrappedIndividualImpl(CodeGenerationInference inference, OWLNamedIndividual owlIndividual) {
         this.owlOntology = inference.getOWLOntology();
         this.owlIndividual = owlIndividual;
         delegate = new CodeGenerationHelper(inference);
     }
- 
+
     /**
      * @return the owlOntology
      */
     public OWLOntology getOwlOntology() {
         return owlOntology;
     }
-    
+
     public OWLNamedIndividual getOwlIndividual() {
-		return owlIndividual;
-	}
-    
+        return owlIndividual;
+    }
+
     protected CodeGenerationHelper getDelegate() {
-		return delegate;
-	}
-    
+        return delegate;
+    }
+
     /**
      * Asserts that the individual has a particular OWL type.
      */
-    
+
     public void assertOwlType(OWLClassExpression type) {
         OWLOntologyManager manager = owlOntology.getOWLOntologyManager();
         OWLDataFactory factory = manager.getOWLDataFactory();
         manager.addAxiom(owlOntology, factory.getOWLClassAssertionAxiom(type, owlIndividual));
     }
-    
+
     /**
-     * Deletes the individual from Ontology 
+     * Deletes the individual from Ontology
      */
     public void delete() {
-        OWLEntityRemover remover = new OWLEntityRemover(Collections
-                .singleton(getOwlOntology()));
+        OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(getOwlOntology()));
         owlIndividual.accept(remover);
         getOwlOntology().getOWLOntologyManager().applyChanges(remover.getChanges());
     }
-    
-    
+
     @Override
     public boolean equals(Object obj) {
-    	if (!(obj instanceof WrappedIndividual)) {
-    		return false;
-    	}
-    	WrappedIndividual other = (WrappedIndividual) obj;
-    	return other.getOwlOntology().equals(owlOntology) && other.getOwlIndividual().equals(owlIndividual);
+        if (!(obj instanceof WrappedIndividual)) {
+            return false;
+        }
+        WrappedIndividual other = (WrappedIndividual) obj;
+        return other.getOwlOntology().equals(owlOntology) && other.getOwlIndividual().equals(owlIndividual);
     }
-    
+
     @Override
     public int hashCode() {
-    	return owlOntology.hashCode() + 42 * owlIndividual.hashCode();
+        return owlOntology.hashCode() + 42 * owlIndividual.hashCode();
     }
-    
+
     @Override
     public int compareTo(WrappedIndividual o) {
         return owlIndividual.compareTo(o.getOwlIndividual());
     }
-    
+
     @Override
     public String toString() {
         ShortFormProvider provider = new SimpleShortFormProvider();
@@ -118,27 +119,24 @@ public class WrappedIndividualImpl implements WrappedIndividual {
         sb.append(')');
         return sb.toString();
     }
-    
+
     private void printTypes(StringBuffer sb, ShortFormProvider provider) {
         Set<OWLClass> types = new TreeSet<OWLClass>();
-        for (OWLClassExpression ce : EntitySearcher.getTypes(owlIndividual,
-                owlOntology)) {
+        for (OWLClassExpression ce : EntitySearcher.getTypes(owlIndividual, owlOntology)) {
             if (!ce.isAnonymous()) {
                 types.add(ce.asOWLClass());
             }
         }
         if (types.size() > 1) {
             sb.append('[');
-        }
-        else if (types.size() == 0) {
+        } else if (types.size() == 0) {
             sb.append("Untyped");
         }
         boolean firstTime = true;
         for (OWLClass type : types) {
             if (firstTime) {
                 firstTime = false;
-            }
-            else {
+            } else {
                 sb.append(", ");
             }
             sb.append(provider.getShortForm(type));
@@ -147,13 +145,11 @@ public class WrappedIndividualImpl implements WrappedIndividual {
             sb.append(']');
         }
     }
-    
+
     private void printObjectPropertyValues(StringBuffer sb, ShortFormProvider provider) {
         Map<OWLObjectPropertyExpression, Collection<OWLIndividual>> valueMap = new TreeMap<OWLObjectPropertyExpression, Collection<OWLIndividual>>(
-                EntitySearcher.getObjectPropertyValues(owlIndividual,
-                        owlOntology).asMap());
-        for (Entry<OWLObjectPropertyExpression, Collection<OWLIndividual>> entry : valueMap
-                .entrySet()) {
+                EntitySearcher.getObjectPropertyValues(owlIndividual, owlOntology).asMap());
+        for (Entry<OWLObjectPropertyExpression, Collection<OWLIndividual>> entry : valueMap.entrySet()) {
             OWLObjectPropertyExpression pe = entry.getKey();
             Collection<OWLIndividual> values = entry.getValue();
             if (!pe.isAnonymous()) {
@@ -165,8 +161,7 @@ public class WrappedIndividualImpl implements WrappedIndividual {
                     if (!value.isAnonymous()) {
                         if (firstTime) {
                             firstTime = false;
-                        }
-                        else {
+                        } else {
                             sb.append(", ");
                         }
                         sb.append(provider.getShortForm(value.asOWLNamedIndividual()));
@@ -179,11 +174,8 @@ public class WrappedIndividualImpl implements WrappedIndividual {
 
     private void printDataPropertyValues(StringBuffer sb, ShortFormProvider provider) {
         Map<OWLDataPropertyExpression, Collection<OWLLiteral>> valueMap = new TreeMap<OWLDataPropertyExpression, Collection<OWLLiteral>>(
-                EntitySearcher
-                        .getDataPropertyValues(owlIndividual, owlOntology)
-                        .asMap());
-        for (Entry<OWLDataPropertyExpression, Collection<OWLLiteral>> entry : valueMap
-                .entrySet()) {
+                EntitySearcher.getDataPropertyValues(owlIndividual, owlOntology).asMap());
+        for (Entry<OWLDataPropertyExpression, Collection<OWLLiteral>> entry : valueMap.entrySet()) {
             OWLDataProperty property = entry.getKey().asOWLDataProperty();
             Collection<OWLLiteral> values = entry.getValue();
             sb.append(provider.getShortForm(property));
@@ -192,8 +184,7 @@ public class WrappedIndividualImpl implements WrappedIndividual {
             for (OWLLiteral value : values) {
                 if (firstTime) {
                     firstTime = false;
-                }
-                else {
+                } else {
                     sb.append(", ");
                 }
                 sb.append(value.getLiteral());

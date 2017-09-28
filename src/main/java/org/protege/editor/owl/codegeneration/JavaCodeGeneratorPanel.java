@@ -31,6 +31,7 @@ import org.protege.owl.codegeneration.Constants;
 
 /**
  * This class creates a panel, which contains options for code generations.
+ * 
  * @author z.khan
  * 
  */
@@ -56,12 +57,16 @@ public class JavaCodeGeneratorPanel extends JPanel {
 
     private JButton cancelButton;
 
-    /**Constructor
-     * @param options the EditableJavaCodeGeneratorOptions object in which to save the option values. 
+    /**
+     * Constructor
+     * 
+     * @param options
+     *            the EditableJavaCodeGeneratorOptions object in which to save the
+     *            option values.
      * @param generateCodeWithOptions
      */
     public JavaCodeGeneratorPanel(CodeGenerationOptions options,
-    		                      GenerateCodeCallback generateCodeWithOptions) {
+            GenerateCodeCallback generateCodeWithOptions) {
 
         this.options = options;
         this.generateCodeCallback = generateCodeWithOptions;
@@ -88,8 +93,8 @@ public class JavaCodeGeneratorPanel extends JPanel {
 
         useReasonerCheckBox = new JCheckBox("Use Reasoner");
         if (generateCodeWithOptions.getOWLModelManager().getReasoner() instanceof NoOpReasoner) {
-        	useReasonerCheckBox.setEnabled(false);
-        	options.setUseReasoner(false);
+            useReasonerCheckBox.setEnabled(false);
+            options.setUseReasoner(false);
         }
         useReasonerCheckBox.setSelected(options.useReasoner());
 
@@ -141,7 +146,7 @@ public class JavaCodeGeneratorPanel extends JPanel {
 
         setVisible(true);
         setButtonListeners();
-        
+
         packageTextField.requestFocus();
 
     }
@@ -152,7 +157,9 @@ public class JavaCodeGeneratorPanel extends JPanel {
     private void setButtonListeners() {
         okButton.addMouseListener(new MouseAdapter() {
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
              */
             @Override
@@ -164,15 +171,16 @@ public class JavaCodeGeneratorPanel extends JPanel {
                     newFile = new File(rootFolder);
                 }
                 options.setOutputFolder(newFile);
-                options.setPackage(packageTextField.getText().trim().length() > 0 ? packageTextField.getText().trim()
-                        : null);
-                options
-                        .setFactoryClassName(factoryClassNameTextField.getText().trim().length() > 0 ? factoryClassNameTextField
-                                .getText().trim()
-                                : Constants.FACTORY_CLASS_NAME);
+                options.setPackage(
+                        packageTextField.getText().trim().length() > 0 ? packageTextField.getText().trim()
+                                : null);
+                options.setFactoryClassName(factoryClassNameTextField.getText().trim().length() > 0
+                        ? factoryClassNameTextField.getText().trim()
+                        : Constants.FACTORY_CLASS_NAME);
                 options.setUseReasoner(useReasonerCheckBox.isSelected());
                 if (options.getPackage() == null) {
-                    JOptionPane.showMessageDialog(null, "Enter package name.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Enter package name.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
 
                 } else {
                     generateCodeCallback.okClicked();
@@ -183,7 +191,9 @@ public class JavaCodeGeneratorPanel extends JPanel {
 
         cancelButton.addMouseListener(new MouseAdapter() {
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
              */
             @Override
@@ -195,7 +205,9 @@ public class JavaCodeGeneratorPanel extends JPanel {
         });
     }
 
-    /** Create check box panel
+    /**
+     * Create check box panel
+     * 
      * @param comp
      * @return
      */
@@ -232,8 +244,12 @@ public class JavaCodeGeneratorPanel extends JPanel {
         }
     }
 
-    /**Returns a panel with component so that the panel is not stretchable vertically
-     * @param component The JComponent to add to the panel
+    /**
+     * Returns a panel with component so that the panel is not stretchable
+     * vertically
+     * 
+     * @param component
+     *            The JComponent to add to the panel
      * @return
      */
     private JPanel getComponentWithNonStretchingVertically(JComponent component) {

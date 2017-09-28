@@ -14,27 +14,27 @@ public class TestListener {
 
     @Test
     public void testListener() throws Exception {
-        MyInferredPizzaFactory factory = TestUtilities.openFactory(TestUtilities.PIZZA_ONTOLOGY, MyInferredPizzaFactory.class, false);
+        MyInferredPizzaFactory factory = TestUtilities.openFactory(TestUtilities.PIZZA_ONTOLOGY,
+                MyInferredPizzaFactory.class, false);
         TestCodeGenerationListener listener = new TestCodeGenerationListener(factory);
         factory.getOwlOntology().getOWLOntologyManager().addOntologyChangeListener(listener);
-        
+
         CheeseyPizza cp = factory.createCheeseyPizza(TestUtilities.PIZZA_NS + "#sundaySpecial");
         Assert.assertEquals(listener.getCreated().size(), 1);
         Assert.assertTrue(listener.getCreated().contains(cp));
         Assert.assertTrue(listener.getModified().isEmpty());
-        
+
     }
-    
+
     private static class TestCodeGenerationListener extends CodeGenerationListener<Pizza> {
-        
+
         private Set<Pizza> created = new TreeSet<Pizza>();
         private Set<Pizza> modified = new TreeSet<Pizza>();
-
 
         public TestCodeGenerationListener(MyInferredPizzaFactory factory) {
             super(factory, Pizza.class);
         }
-        
+
         @Override
         public void individualCreated(Pizza individual) {
             created.add(individual);
@@ -44,19 +44,19 @@ public class TestListener {
         public void individualModified(Pizza individual) {
             modified.add(individual);
         }
-        
+
         public Set<Pizza> getCreated() {
             return created;
         }
-        
+
         public Set<Pizza> getModified() {
             return modified;
         }
-        
+
         public void clear() {
             created.clear();
             modified.clear();
         }
-        
+
     }
 }

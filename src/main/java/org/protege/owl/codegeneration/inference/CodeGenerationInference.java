@@ -14,41 +14,41 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public interface CodeGenerationInference {
-	
-	OWLOntology getOWLOntology();
-	
-	void preCompute();
-	
-	void flush();
 
-	Collection<OWLClass> getOwlClasses();
-		
-	Collection<OWLClass> getSubClasses(OWLClass owlClass);
-	
-	Collection<OWLClass> getSuperClasses(OWLClass owlClass);
-	
-	Set<JavaPropertyDeclaration> getJavaPropertyDeclarations(OWLClass cls, CodeGenerationNames names);
-	
-	boolean isFunctional(OWLObjectProperty p);
+    OWLOntology getOWLOntology();
 
-	OWLClass getRange(OWLObjectProperty p);
-	
-	OWLClass getRange(OWLClass owlClass, OWLObjectProperty p);
-	
-	boolean isFunctional(OWLDataProperty p);
-	
-	OWLDatatype getRange(OWLDataProperty p);
-	
-	OWLDatatype getRange(OWLClass owlClass, OWLDataProperty p);
+    void preCompute();
 
-	Collection<OWLNamedIndividual> getIndividuals(OWLClass owlClass);
+    void flush();
 
-	boolean canAs(OWLNamedIndividual i, OWLClass c);
+    Collection<OWLClass> getOwlClasses();
 
-	Collection<OWLClass> getTypes(OWLNamedIndividual i);
-	
-	Collection<OWLNamedIndividual> getPropertyValues(OWLNamedIndividual i, OWLObjectProperty p);
-	
+    Collection<OWLClass> getSubClasses(OWLClass owlClass);
+
+    Collection<OWLClass> getSuperClasses(OWLClass owlClass);
+
+    Set<JavaPropertyDeclaration> getJavaPropertyDeclarations(OWLClass cls, CodeGenerationNames names);
+
+    boolean isFunctional(OWLObjectProperty p);
+
+    OWLClass getRange(OWLObjectProperty p);
+
+    OWLClass getRange(OWLClass owlClass, OWLObjectProperty p);
+
+    boolean isFunctional(OWLDataProperty p);
+
+    OWLDatatype getRange(OWLDataProperty p);
+
+    OWLDatatype getRange(OWLClass owlClass, OWLDataProperty p);
+
+    Collection<OWLNamedIndividual> getIndividuals(OWLClass owlClass);
+
+    boolean canAs(OWLNamedIndividual i, OWLClass c);
+
+    Collection<OWLClass> getTypes(OWLNamedIndividual i);
+
+    Collection<OWLNamedIndividual> getPropertyValues(OWLNamedIndividual i, OWLObjectProperty p);
+
     Collection<OWLLiteral> getPropertyValues(OWLNamedIndividual i, OWLDataProperty p);
 
 }
