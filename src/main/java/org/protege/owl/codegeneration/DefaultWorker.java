@@ -44,10 +44,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 public class DefaultWorker implements Worker {
-    private EnumMap<CodeGenerationPhase, String> templateMap = new EnumMap<CodeGenerationPhase, String>(
+    private EnumMap<CodeGenerationPhase, String> templateMap = new EnumMap<>(
             CodeGenerationPhase.class);
     private OWLOntology owlOntology;
-    private CodeGenerationOptions options;
+    protected CodeGenerationOptions options;
     private CodeGenerationNames names;
     private CodeGenerationInference inference;
     private JavaPropertyDeclarationCache propertyDeclarations;
@@ -66,13 +66,14 @@ public class DefaultWorker implements Worker {
 
     public DefaultWorker(OWLOntology ontology, CodeGenerationOptions options, CodeGenerationNames names,
             CodeGenerationInference inference) {
-        this.owlOntology = ontology;
+        owlOntology = ontology;
         this.options = options;
         this.names = names;
         this.inference = inference;
         propertyDeclarations = new JavaPropertyDeclarationCache(inference, names);
     }
 
+    @Override
     public OWLOntology getOwlOntology() {
         return owlOntology;
     }
@@ -82,27 +83,33 @@ public class DefaultWorker implements Worker {
         return inference;
     }
 
+    @Override
     public Collection<OWLClass> getOwlClasses() {
-        return new TreeSet<OWLClass>(inference.getOwlClasses());
+        return new TreeSet<>(inference.getOwlClasses());
     }
 
+    @Override
     public Collection<OWLObjectProperty> getOwlObjectProperties() {
         return Utilities.filterIgnored(owlOntology.getObjectPropertiesInSignature(true), owlOntology);
     }
 
+    @Override
     public Collection<OWLDataProperty> getOwlDataProperties() {
         return Utilities.filterIgnored(owlOntology.getDataPropertiesInSignature(true), owlOntology);
     }
 
+    @Override
     public Collection<OWLObjectProperty> getObjectPropertiesForClass(OWLClass owlClass) {
         return Utilities.filterIgnored(propertyDeclarations.getObjectPropertiesForClass(owlClass),
                 owlOntology);
     }
 
+    @Override
     public Collection<OWLDataProperty> getDataPropertiesForClass(OWLClass owlClass) {
         return Utilities.filterIgnored(propertyDeclarations.getDataPropertiesForClass(owlClass), owlOntology);
     }
 
+    @Override
     public void initialize() {
         File folder = options.getOutputFolder();
         if (folder != null && !folder.exists()) {
@@ -125,24 +132,29 @@ public class DefaultWorker implements Worker {
         factoryDirectory.mkdirs();
     }
 
+    @Override
     public File getInterfaceFile(OWLClass owlClass) {
         String interfaceName = names.getInterfaceName(owlClass);
         return getInterfaceFile(interfaceName);
     }
 
+    @Override
     public File getImplementationFile(OWLClass owlClass) {
         String implName = names.getImplementationName(owlClass);
         return getImplementationFile(implName);
     }
 
+    @Override
     public File getVocabularyFile() {
         return new File(options.getOutputFolder(), options.getVocabularyFqn().replace('.', '/') + ".java");
     }
 
+    @Override
     public File getFactoryFile() {
         return new File(options.getOutputFolder(), options.getFactoryFqn().replace('.', '/') + ".java");
     }
 
+    @Override
     public String getTemplate(CodeGenerationPhase phase, OWLClass owlClass, Object owlProperty) {
         String resource = "/" + phase.getTemplateName();
         String template = templateMap.get(phase);
@@ -170,6 +182,7 @@ public class DefaultWorker implements Worker {
         return template;
     }
 
+    @Override
     public void configureSubstitutions(CodeGenerationPhase phase,
             Map<SubstitutionVariable, String> substitutions, OWLClass owlClass, OWLEntity owlProperty) {
         switch (phase) {

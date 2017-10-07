@@ -60,6 +60,16 @@ public class JavaCodeGenerator {
      * 
      * @throws IOException
      */
+    public void createOnlyVocabulary() throws IOException {
+        Collection<OWLClass> owlClassList = worker.getOwlClasses();
+        printVocabularyCode(owlClassList);
+    }
+
+    /**
+     * Initiates the code generation
+     * 
+     * @throws IOException
+     */
     public void createAll() throws IOException {
         Collection<OWLClass> owlClassList = worker.getOwlClasses();
         printVocabularyCode(owlClassList);
@@ -96,8 +106,7 @@ public class JavaCodeGenerator {
         Collection<OWLObjectProperty> owlObjectProperties = worker.getObjectPropertiesForClass(owlClass);
         Collection<OWLDataProperty> owlDataProperties = worker.getDataPropertiesForClass(owlClass);
 
-        Map<SubstitutionVariable, String> substitutions = new EnumMap<SubstitutionVariable, String>(
-                SubstitutionVariable.class);
+        Map<SubstitutionVariable, String> substitutions = new EnumMap<>(SubstitutionVariable.class);
 
         fillAndWriteTemplate(printWriter, CREATE_INTERFACE_HEADER, substitutions, owlClass, null);
 
@@ -136,8 +145,7 @@ public class JavaCodeGenerator {
         Collection<OWLObjectProperty> owlObjectProperties = worker.getObjectPropertiesForClass(owlClass);
         Collection<OWLDataProperty> owlDataProperties = worker.getDataPropertiesForClass(owlClass);
 
-        Map<SubstitutionVariable, String> substitutions = new EnumMap<SubstitutionVariable, String>(
-                SubstitutionVariable.class);
+        Map<SubstitutionVariable, String> substitutions = new EnumMap<>(SubstitutionVariable.class);
 
         fillAndWriteTemplate(printWriter, CREATE_IMPLEMENTATION_HEADER, substitutions, owlClass, null);
 
@@ -174,8 +182,7 @@ public class JavaCodeGenerator {
         File vocabularyFile = worker.getVocabularyFile();
         FileWriter vocabularyfileWriter = new FileWriter(vocabularyFile);
         PrintWriter vocabularyPrintWriter = new PrintWriter(vocabularyfileWriter);
-        Map<SubstitutionVariable, String> substitutions = new EnumMap<SubstitutionVariable, String>(
-                SubstitutionVariable.class);
+        Map<SubstitutionVariable, String> substitutions = new EnumMap<>(SubstitutionVariable.class);
         fillAndWriteTemplate(vocabularyPrintWriter, CREATE_VOCABULARY_HEADER, substitutions, null, null);
 
         for (OWLClass owlClass : owlClassList) {
@@ -211,8 +218,7 @@ public class JavaCodeGenerator {
         factoryFileWriter = new FileWriter(factoryFile);
         factoryPrintWriter = new PrintWriter(factoryFileWriter);
 
-        Map<SubstitutionVariable, String> substitutions = new EnumMap<SubstitutionVariable, String>(
-                SubstitutionVariable.class);
+        Map<SubstitutionVariable, String> substitutions = new EnumMap<>(SubstitutionVariable.class);
 
         fillAndWriteTemplate(factoryPrintWriter, CREATE_FACTORY_HEADER, substitutions, null, null);
 

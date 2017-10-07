@@ -16,7 +16,7 @@ import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.protege.owl.codegeneration.CodeGenerationOptions;
-import org.protege.owl.codegeneration.DefaultWorker;
+import org.protege.owl.codegeneration.OnlyVocabularyWorker;
 import org.protege.owl.codegeneration.inference.CodeGenerationInference;
 import org.protege.owl.codegeneration.inference.ReasonerBasedInference;
 import org.protege.owl.codegeneration.inference.SimpleInference;
@@ -143,8 +143,8 @@ public class GenerateProtegeOwlJavaCodeAction extends ProtegeOWLAction implement
             }
             // deleting stuff can in some cases be very bad here. If it is reinstated then
             // at least warn the user.
-            DefaultWorker.generateCode(owlOntology, options, new ProtegeNames(owlModelManager, options),
-                    inference);
+            OnlyVocabularyWorker.generateVocabularyCode(owlOntology, options,
+                    new ProtegeNames(owlModelManager, options), inference);
             JOptionPane.showMessageDialog(null, "Java code successfully generated.", "Information",
                     JOptionPane.INFORMATION_MESSAGE);
             LOGGER.info("Java code successfully generated in folder " + options.getOutputFolder() + ".");
