@@ -33,14 +33,15 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 public class SimpleInference implements CodeGenerationInference {
     private OWLOntology ontology;
     private OWLDataFactory factory;
     private Set<OWLClass> topLevelClasses;
-    private Map<OWLClass, Set<OWLClass>> inferredSubclassMap = new TreeMap<OWLClass, Set<OWLClass>>();
-    private Map<OWLClass, Set<OWLClass>> indirectSuperclassMap = new HashMap<OWLClass, Set<OWLClass>>();
+    private Map<OWLClass, Set<OWLClass>> inferredSubclassMap = new TreeMap<>();
+    private Map<OWLClass, Set<OWLClass>> indirectSuperclassMap = new HashMap<>();
     private Map<OWLClass, Set<OWLEntity>> domainMap;
     private Map<OWLObjectProperty, OWLClass> objectRangeMap;
     private Map<OWLDataProperty, OWLDatatype> dataRangeMap;
@@ -50,24 +51,29 @@ public class SimpleInference implements CodeGenerationInference {
         factory = ontology.getOWLOntologyManager().getOWLDataFactory();
     }
 
+    @Override
     public OWLOntology getOWLOntology() {
         return ontology;
     }
 
+    @Override
     public void preCompute() {
         ;
     }
 
+    @Override
     public void flush() {
         ;
     }
 
+    @Override
     public Collection<OWLClass> getOwlClasses() {
-        Set<OWLClass> classes = new HashSet<OWLClass>(ontology.getClassesInSignature());
+        Set<OWLClass> classes = new HashSet<>(ontology.getClassesInSignature(Imports.INCLUDED));
         classes.remove(factory.getOWLThing());
         return classes;
     }
 
+    @Override
     public Collection<OWLClass> getSubClasses(OWLClass owlClass) {
         if (topLevelClasses == null) {
             initializeInferredSubclasses();
@@ -75,7 +81,7 @@ public class SimpleInference implements CodeGenerationInference {
         if (owlClass.equals(factory.getOWLThing())) {
             return Collections.unmodifiableCollection(topLevelClasses);
         } else {
-            Set<OWLClass> subClasses = new TreeSet<OWLClass>();
+            Set<OWLClass> subClasses = new TreeSet<>();
             for (OWLClassExpression ce : EntitySearcher.getSubClasses(owlClass, ontology)) {
                 if (!ce.isAnonymous()) {
                     subClasses.add(ce.asOWLClass());
@@ -89,8 +95,9 @@ public class SimpleInference implements CodeGenerationInference {
         }
     }
 
+    @Override
     public Collection<OWLClass> getSuperClasses(OWLClass owlClass) {
-        Set<OWLClass> superClasses = new HashSet<OWLClass>();
+        Set<OWLClass> superClasses = new HashSet<>();
         for (OWLClassExpression ce : EntitySearcher.getSuperClasses(owlClass, ontology.getImportsClosure())) {
             if (!ce.isAnonymous()) {
                 superClasses.add(ce.asOWLClass());
@@ -109,7 +116,7 @@ public class SimpleInference implements CodeGenerationInference {
     }
 
     private Collection<OWLClass> getNamedConjuncts(OWLObjectIntersectionOf ce) {
-        Set<OWLClass> conjuncts = new HashSet<OWLClass>();
+        Set<OWLClass> conjuncts = new HashSet<>();
         for (OWLClassExpression conjunct : ce.getOperands()) {
             if (!conjunct.isAnonymous()) {
                 conjuncts.add(conjunct.asOWLClass());
@@ -120,7 +127,7 @@ public class SimpleInference implements CodeGenerationInference {
 
     @Override
     public Collection<OWLNamedIndividual> getPropertyValues(OWLNamedIndividual i, OWLObjectProperty p) {
-        Collection<OWLNamedIndividual> results = new HashSet<OWLNamedIndividual>();
+        Collection<OWLNamedIndividual> results = new HashSet<>();
         for (OWLOntology imported : ontology.getImportsClosure()) {
             for (OWLIndividual j : EntitySearcher.getObjectPropertyValues(i, p, imported)) {
                 if (!j.isAnonymous()) {
@@ -133,18 +140,19 @@ public class SimpleInference implements CodeGenerationInference {
 
     @Override
     public Collection<OWLLiteral> getPropertyValues(OWLNamedIndividual i, OWLDataProperty p) {
-        Set<OWLLiteral> results = new HashSet<OWLLiteral>();
+        Set<OWLLiteral> results = new HashSet<>();
         for (OWLOntology imported : ontology.getImportsClosure()) {
             results.addAll(EntitySearcher.getDataPropertyValues(i, p, imported));
         }
         return results;
     }
 
+    @Override
     public Set<JavaPropertyDeclaration> getJavaPropertyDeclarations(OWLClass cls, CodeGenerationNames names) {
         if (domainMap == null) {
             initializeDomainMap();
         }
-        Set<JavaPropertyDeclaration> declarations = new HashSet<JavaPropertyDeclaration>();
+        Set<JavaPropertyDeclaration> declarations = new HashSet<>();
         Set<OWLEntity> domains = domainMap.get(cls);
         if (domains != null) {
             for (OWLEntity property : domains) {
@@ -184,6 +192,7 @@ public class SimpleInference implements CodeGenerationInference {
         return ontology.containsAxiomIgnoreAnnotations(functionalAxiom);
     }
 
+    @Override
     public OWLDatatype getRange(OWLDataProperty p) {
         if (dataRangeMap == null) {
             intializeDataRangeMap();
@@ -191,12 +200,14 @@ public class SimpleInference implements CodeGenerationInference {
         return dataRangeMap.get(p);
     }
 
+    @Override
     public OWLDatatype getRange(OWLClass owlClass, OWLDataProperty p) {
         return getRange(p);
     }
 
+    @Override
     public Collection<OWLNamedIndividual> getIndividuals(OWLClass owlClass) {
-        Set<OWLNamedIndividual> individuals = new HashSet<OWLNamedIndividual>();
+        Set<OWLNamedIndividual> individuals = new HashSet<>();
         for (OWLIndividual i : EntitySearcher.getIndividuals(owlClass, ontology)) {
             if (!i.isAnonymous()) {
                 individuals.add(i.asOWLNamedIndividual());
@@ -205,6 +216,7 @@ public class SimpleInference implements CodeGenerationInference {
         return individuals;
     }
 
+    @Override
     public boolean canAs(OWLNamedIndividual i, OWLClass c) {
         Collection<OWLClass> types = getTypes(i);
         if (types.contains(c)) {
@@ -218,8 +230,9 @@ public class SimpleInference implements CodeGenerationInference {
         return false;
     }
 
+    @Override
     public Collection<OWLClass> getTypes(OWLNamedIndividual i) {
-        Set<OWLClass> types = new HashSet<OWLClass>();
+        Set<OWLClass> types = new HashSet<>();
         for (OWLClassExpression ce : EntitySearcher.getTypes(i, ontology.getImportsClosure())) {
             if (!ce.isAnonymous()) {
                 types.add(ce.asOWLClass());
@@ -235,7 +248,7 @@ public class SimpleInference implements CodeGenerationInference {
      */
 
     private void initializeInferredSubclasses() {
-        topLevelClasses = new TreeSet<OWLClass>();
+        topLevelClasses = new TreeSet<>();
         for (OWLClass owlClass : ontology.getClassesInSignature()) {
             boolean foundParent = false;
             for (OWLClassExpression parent : EntitySearcher.getSuperClasses(owlClass, ontology)) {
@@ -265,7 +278,7 @@ public class SimpleInference implements CodeGenerationInference {
                 if (!conjunct.isAnonymous() && !conjunct.equals(factory.getOWLThing())) {
                     Set<OWLClass> inferredSubclasses = inferredSubclassMap.get(conjunct);
                     if (inferredSubclasses == null) {
-                        inferredSubclasses = new TreeSet<OWLClass>();
+                        inferredSubclasses = new TreeSet<>();
                         inferredSubclassMap.put(conjunct.asOWLClass(), inferredSubclasses);
                     }
                     inferredSubclasses.add(child);
@@ -277,13 +290,13 @@ public class SimpleInference implements CodeGenerationInference {
     }
 
     private void initializeDomainMap() {
-        domainMap = new HashMap<OWLClass, Set<OWLEntity>>();
+        domainMap = new HashMap<>();
         for (OWLObjectPropertyDomainAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
             if (!axiom.getDomain().isAnonymous() && !axiom.getProperty().isAnonymous()) {
                 OWLClass owlClass = axiom.getDomain().asOWLClass();
                 Set<OWLEntity> domains = domainMap.get(owlClass);
                 if (domains == null) {
-                    domains = new HashSet<OWLEntity>();
+                    domains = new HashSet<>();
                     domainMap.put(owlClass, domains);
                 }
                 domains.add(axiom.getProperty().asOWLObjectProperty());
@@ -294,7 +307,7 @@ public class SimpleInference implements CodeGenerationInference {
                 OWLClass owlClass = axiom.getDomain().asOWLClass();
                 Set<OWLEntity> domains = domainMap.get(owlClass);
                 if (domains == null) {
-                    domains = new HashSet<OWLEntity>();
+                    domains = new HashSet<>();
                     domainMap.put(owlClass, domains);
                 }
                 domains.add(axiom.getProperty().asOWLDataProperty());
@@ -303,7 +316,7 @@ public class SimpleInference implements CodeGenerationInference {
     }
 
     private void intializeObjectRangeMap() {
-        objectRangeMap = new HashMap<OWLObjectProperty, OWLClass>();
+        objectRangeMap = new HashMap<>();
         for (OWLObjectPropertyRangeAxiom axiom : ontology.getAxioms(AxiomType.OBJECT_PROPERTY_RANGE)) {
             if (!axiom.getRange().isAnonymous() && !axiom.getProperty().isAnonymous()) {
                 OWLObjectProperty property = axiom.getProperty().asOWLObjectProperty();
@@ -315,7 +328,7 @@ public class SimpleInference implements CodeGenerationInference {
     }
 
     private void intializeDataRangeMap() {
-        dataRangeMap = new HashMap<OWLDataProperty, OWLDatatype>();
+        dataRangeMap = new HashMap<>();
         for (OWLDataPropertyRangeAxiom axiom : ontology.getAxioms(AxiomType.DATA_PROPERTY_RANGE)) {
             if (!axiom.getProperty().isAnonymous()) {
                 OWLDataProperty property = axiom.getProperty().asOWLDataProperty();
@@ -339,7 +352,7 @@ public class SimpleInference implements CodeGenerationInference {
     private Set<OWLClass> getIndirectSuperClasses(OWLClass cls) {
         Set<OWLClass> superClasses = indirectSuperclassMap.get(cls);
         if (superClasses == null) {
-            superClasses = new HashSet<OWLClass>();
+            superClasses = new HashSet<>();
             addIndirectSuperClasses(superClasses, cls);
             indirectSuperclassMap.put(cls, superClasses);
         }
